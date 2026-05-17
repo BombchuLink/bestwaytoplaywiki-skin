@@ -1,0 +1,1180 @@
+@import 'mediawiki.skin.variables.less';
+@import 'variables.less';
+@import 'common.less';
+@import 'Portlet.less';
+
+// ============================================================
+// MT Color & Typography Variables
+// ============================================================
+@mt-bg:         #f0f4fb;   // light blue-grey — the main page field
+@mt-surface:    #ffffff;   // content panel — white
+@mt-surface-dk: #dae6f5;   // light steel chrome — header/footer bars
+@mt-border:     #8aadd8;   // chrome highlight lines
+@mt-accent:     #2a60a8;   // links / hover highlights
+@mt-text:       #1a2b3e;   // primary text
+@mt-muted:      #4a6888;   // secondary / meta text
+@mt-btn-hi:     #ccddf0;   // pill button gradient top
+@mt-btn-lo:     #a8c4de;   // pill button gradient bottom
+@mt-font:       'Courier New', Courier, monospace;
+@mt-font-body:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+// ============================================================
+// Mixins
+// ============================================================
+.mt-chrome-bg() {
+	background:
+		url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0,4 L4,0' stroke='%2388aacc' stroke-width='0.6' opacity='0.22'/%3E%3C/svg%3E" ),
+		linear-gradient( 180deg, @mt-surface-dk 0%, darken( @mt-surface-dk, 6% ) 100% );
+}
+
+.mt-pill() {
+	display: inline-block;
+	padding: 4px 13px;
+	background: linear-gradient( 180deg, @mt-btn-hi 0%, @mt-btn-lo 100% );
+	border: 1px solid @mt-border;
+	border-radius: 11px;
+	color: @mt-text;
+	font-family: @mt-font;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.1s, border-color 0.1s;
+
+	&:hover,
+	&:focus {
+		color: @mt-accent;
+		border-color: @mt-accent;
+		outline: none;
+	}
+}
+
+// ============================================================
+// Portlet checkbox — disable pointer events everywhere.
+// The checkbox covers 100% of each .mw-portlet for mobile collapse
+// toggling, but we handle that differently. Without this, nothing
+// in any portlet is clickable.
+// ============================================================
+.mw-portlet input[ type='checkbox' ] {
+	pointer-events: none;
+}
+
+// ============================================================
+// Base
+// ============================================================
+html,
+body {
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	// Diagonal gradient gives the brushed-steel depth visible in the reference
+	background: linear-gradient( 160deg, #e8f0fa 0%, #d0e0f0 100% );
+	background-attachment: fixed;
+	color: @mt-text;
+	font-family: @mt-font-body;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+#mt-wrapper {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	// Transparent so the body gradient shows through
+	background: transparent;
+}
+
+// Neutralize common.less layout wrapper — our structure is flat
+#mw-wrapper {
+	max-width: none;
+	margin: 0;
+	padding: 0;
+}
+
+// ============================================================
+// Header
+// ============================================================
+#mt-header {
+	position: relative;
+	.mt-chrome-bg();
+	border-bottom: 1px solid @mt-border;
+}
+
+.mt-header-inner {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 10px 1px 0px 10px;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+// Logo
+#p-logo {
+	float: none;
+	flex: 0 0 182px;
+	text-align: left;
+
+	a {
+		display: block;
+		width: 182px;
+		height: 36px;
+		background: url( '../logos/Best_Way_To_Play_Full.png' ) no-repeat left center / contain;
+		text-decoration: none;
+		transition: opacity 0.1s;
+
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+.mt-logo-name {
+	display: none;
+}
+
+// Search
+.mt-search-wrap {
+	form {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	// Target the actual input regardless of OO-UI wrapper depth
+	input[ type='search' ] {
+		background: @mt-surface !important;
+		border: 1px solid @mt-border !important;
+		border-radius: 10px !important;
+		color: @mt-text !important;
+		padding: 4px 12px !important;
+		font-family: @mt-font !important;
+		font-size: 11px !important;
+		width: 260px !important;
+		outline: none !important;
+		box-shadow: none !important;
+
+		&:focus {
+			border-color: @mt-accent !important;
+		}
+
+		&::placeholder {
+			color: fade( @mt-muted, 60% );
+		}
+	}
+
+	button,
+	input[ type='submit' ] {
+		.mt-pill();
+		padding: 4px 12px;
+	}
+}
+
+// Wrapper div injected by JS to host the cursor overlay
+.mt-input-wrap {
+	position: relative;
+	display: inline-block;
+}
+
+@keyframes mt-cursor-fade {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+// Fading "_" positioned right after the ">" placeholder char
+.mt-prompt-cursor {
+	position: absolute;
+	// 12px = input left-padding; 1ch = width of one monospace glyph (the ">")
+	left: calc( 12px + 1ch );
+	top: 50%;
+	transform: translateY( -50% );
+	font-family: @mt-font;
+	font-size: 11px;
+	color: fade( @mt-muted, 60% );
+	pointer-events: none;
+	user-select: none;
+	animation: mt-cursor-fade 1.06s ease-in-out infinite alternate;
+}
+
+.mt-search-wrap {
+	display: flex;
+	flex-wrap: wrap;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 0;
+	align-items: center;
+}
+
+// User menu — horizontal text links with | separators
+.mt-user-nav {
+	flex-shrink: 0;
+	margin-left: auto;
+
+	.mw-portlet-body ul {
+		display: flex;
+		flex-wrap: wrap;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		gap: 0;
+		align-items: center;
+	}
+
+	.mw-portlet-body li {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+
+	.mw-portlet-body li + li::before {
+		content: '|';
+		color: fade( @mt-border, 40% );
+		margin: 0 6px;
+		font-family: @mt-font;
+		font-size: 10px;
+	}
+
+	.mw-portlet-body li a {
+		color: @mt-muted;
+		font-family: @mt-font;
+		font-size: 11px;
+		font-weight: 900;
+		text-decoration: none;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+
+		&:hover {
+			color: @mt-accent;
+		}
+	}
+}
+
+// Wave divider
+@keyframes mt-wave-drift {
+	from { transform: translateX( 0 ); }
+	to   { transform: translateX( -50% ); }
+}
+
+.mt-wave {
+	width: 100%;
+	overflow: hidden;
+	line-height: 0;
+
+	svg {
+		display: block;
+		width: 200%;
+		height: auto;
+		animation: mt-wave-drift 35s linear infinite;
+	}
+}
+
+.mt-wave-footer svg {
+	animation-direction: reverse;
+}
+
+// ============================================================
+// Layout
+// ============================================================
+@keyframes mt-diag-1 {
+	from { background-position: 0 0; }
+	to   { background-position: -200px 0; }
+}
+@keyframes mt-diag-2 {
+	from { background-position: 0 0; }
+	to   { background-position: -120px 0; }
+}
+@keyframes mt-diag-3 {
+	from { background-position: 0 0; }
+	to   { background-position: -70px 0; }
+}
+
+#mt-layout {
+	display: flex;
+	flex: 1;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 20px 24px;
+	gap: 14px;
+	align-items: flex-start;
+	position: relative;
+	z-index: 0;
+
+	// Layer 1: thick lines, slowest — full viewport width
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 100vw;
+		transform: translateX( -50% );
+		pointer-events: none;
+		z-index: -1;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cline x1='0' y1='200' x2='200' y2='0' stroke='%236080b0' stroke-width='2.5' stroke-opacity='0.05'/%3E%3C/svg%3E");
+		background-repeat: repeat;
+		background-size: 200px 200px;
+		animation: mt-diag-1 100s linear infinite;
+	}
+
+	// Layer 2: thin lines, faster — full viewport width
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 100vw;
+		transform: translateX( -50% );
+		pointer-events: none;
+		z-index: -1;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cline x1='0' y1='70' x2='70' y2='0' stroke='%236080b0' stroke-width='0.8' stroke-opacity='0.06'/%3E%3C/svg%3E");
+		background-repeat: repeat;
+		background-size: 70px 70px;
+		animation: mt-diag-3 18s linear infinite;
+	}
+}
+
+// ============================================================
+// Sidebar
+// ============================================================
+#mt-sidebar {
+	flex-shrink: 0;
+	width: 155px;
+
+	.mw-portlet {
+		margin-bottom: 16px;
+	}
+
+	// Show the portlet heading as BTWP.LABEL
+	.mw-portlet h3 {
+		display: block;
+		font-family: @mt-font;
+		font-size: 10px;
+		font-weight: bold;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		color: @mt-muted;
+		margin: 0 0 5px;
+		padding: 0;
+
+		&::before {
+			content: '';
+			color: @mt-border;
+			opacity: 0.75;
+		}
+	}
+
+	.mw-portlet-body {
+		padding: 0;
+		margin: 0;
+	}
+
+	.mw-portlet-body ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-bottom: 1px solid fade( @mt-border, 15% );
+	}
+
+	.mw-portlet-body li {
+		display: block;
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid fade( @mt-border, 15% );
+	}
+
+	.mw-portlet-body li a {
+		display: block;
+		padding: 4px 4px 4px 10px;
+		color: @mt-muted;
+		font-family: @mt-font;
+		font-size: 11px;
+		font-weight: 900;
+		text-decoration: none;
+		letter-spacing: 0.04em;
+		transition: color 0.1s, background 0.1s;
+
+		&:hover {
+			color: @mt-accent;
+			background: fade( @mt-accent, 5% );
+		}
+	}
+}
+
+// Main Page is redundant — the logo already links there
+#n-mainpage-description {
+	display: none;
+}
+
+.mt-sidebar-label {
+	font-family: @mt-font;
+	font-size: 10px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	color: @mt-border;
+	padding-bottom: 6px;
+	border-bottom: 1px solid @mt-border;
+	margin-bottom: 10px;
+}
+
+// ============================================================
+// Content panel
+// ============================================================
+.mt-content {
+	flex: 1;
+	min-width: 0;
+	background: @mt-surface;
+	border: 1px solid @mt-border;
+	border-radius: 3px;
+	box-shadow:
+		inset 0 1px 3px fade( #000, 7% ),
+		0 1px 4px fade( #000, 10% );
+}
+
+// Tab bar
+.mt-tabs-bar {
+	display: flex;
+	flex-wrap: wrap;
+	border-bottom: 1px solid fade( @mt-border, 40% );
+	padding: 6px 16px 0;
+	background: darken( @mt-surface, 3% );
+	border-radius: 3px 3px 0 0;
+	min-height: 32px;
+
+	.mw-portlet-body ul {
+		display: flex;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		gap: 2px;
+	}
+
+	.mw-portlet-body li {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+
+	.mw-portlet-body li a {
+		display: inline-block;
+		padding: 3px 11px;
+		background: fade( @mt-bg, 60% );
+		border: 1px solid fade( @mt-border, 35% );
+		border-bottom: none;
+		border-radius: 5px 5px 0 0;
+		color: @mt-muted;
+		font-family: @mt-font;
+		font-size: 10px;
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		text-decoration: none;
+		transition: color 0.1s, border-color 0.1s;
+
+		&:hover {
+			color: @mt-accent;
+			border-color: @mt-border;
+		}
+	}
+
+	.mw-portlet-body li.selected a,
+	.mw-portlet-body li.mw-ui-anchor-current a {
+		background: @mt-surface;
+		color: @mt-accent;
+		border-color: @mt-border;
+	}
+
+	// Push actions (More, Move, Delete…) to the right
+	#p-cactions {
+		margin-left: auto;
+	}
+}
+
+// Content inner padding
+#siteNotice,
+.firstHeading,
+.mw-first-heading,
+#contentSub {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+// Page title
+.mw-body h1,
+.mw-first-heading {
+	padding: 10px 20px 8px;
+    font-family: 'Rajdhani', @mt-font-body;
+	font-size: 22px;
+	font-weight: bold;
+	color: @mt-text;
+	margin: 0;
+	border-bottom: 1px solid fade( @mt-border, 30% );
+	letter-spacing: 0.04em;
+	border-top: none;
+}
+
+.mw-body-content {
+	padding: 5px 10px 5px 10px;
+	color: @mt-text;
+
+	a {
+		color: @mt-accent;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:visited {
+			color: mix( @mt-accent, @mt-muted, 55% );
+		}
+	}
+
+	p {
+		margin: 0 0 8px;
+		line-height: 1.65;
+	}
+
+	ul,
+	ol {
+		padding-left: 22px;
+		margin: 0 0 10px;
+	}
+
+	// Section headers — dot-notation style
+	h2 {
+		font-family: @mt-font;
+		font-size: 16px;
+		font-weight: bold;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: @mt-accent;
+		//border-bottom: 1px solid @mt-border;
+		padding-bottom: 3px;
+		margin: 12px 5px 0px 0px;
+
+		.mw-headline::before {
+			content: '';
+			color: @mt-border;
+			font-size: 10px;
+			opacity: 0.8;
+			margin-right: 2px;
+		}
+	}
+
+	h3 {
+		font-family: @mt-font;
+		font-size: 11px;
+		font-weight: bold;
+		text-transform: uppercase;
+		letter-spacing: 0.09em;
+		color: @mt-muted;
+		margin: 16px 0 7px;
+
+		.mw-headline::before {
+			content: '// ';
+			color: @mt-border;
+			opacity: 0.65;
+		}
+	}
+
+	h4,
+	h5,
+	h6 {
+		font-family: @mt-font;
+		font-size: 11px;
+		color: @mt-muted;
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		margin: 12px 0 5px;
+	}
+
+	code,
+	kbd,
+	samp {
+		font-family: @mt-font;
+		font-size: 11px;
+		background: darken( @mt-surface, 4% );
+		border: 1px solid fade( @mt-border, 35% );
+		border-radius: 2px;
+		color: @mt-accent;
+		padding: 1px 5px;
+	}
+
+	pre {
+		font-family: @mt-font;
+		font-size: 11px;
+		background: darken( @mt-surface, 4% );
+		border: 1px solid fade( @mt-border, 35% );
+		border-radius: 3px;
+		color: @mt-accent;
+		padding: 10px 14px;
+		overflow-x: auto;
+		margin: 0 0 12px;
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid fade( @mt-border, 35% );
+		margin: 16px 0;
+	}
+
+	blockquote {
+		border-left: 3px solid @mt-border;
+		margin: 10px 0 10px 8px;
+		padding: 8px 12px;
+		color: @mt-muted;
+		background: darken( @mt-surface, 3% );
+		font-style: italic;
+	}
+
+	// WikiTable
+	table.wikitable {
+		border-collapse: collapse;
+		border: 1px solid @mt-border;
+		background: darken( @mt-surface, 3% );
+		margin: 0 0 14px;
+		font-size: 12px;
+
+		th {
+			background: linear-gradient( 180deg, @mt-btn-hi 0%, @mt-btn-lo 100% );
+			border: 1px solid @mt-border;
+			color: @mt-text;
+			font-family: @mt-font;
+			font-size: 10px;
+			text-transform: uppercase;
+			letter-spacing: 0.09em;
+			padding: 6px 10px;
+		}
+
+		td {
+			border: 1px solid fade( @mt-border, 30% );
+			padding: 5px 10px;
+			color: @mt-text;
+		}
+
+		tr:nth-child( even ) td {
+			background: fade( @mt-accent, 3% );
+		}
+	}
+}
+
+// ============================================================
+// Last-modified bar (sits between layout and footer)
+// ============================================================
+#mt-lastmod {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 4px 24px 0;
+	text-align: right;
+
+	.skin-last-modified {
+		font-family: @mt-font;
+		font-size: 10px;
+		color: fade( @mt-muted, 45% );
+		letter-spacing: 0.04em;
+	}
+}
+
+// ============================================================
+// Footer
+// ============================================================
+#mt-footer {
+	margin-top: auto;
+	.mt-chrome-bg();
+	border-top: 1px solid @mt-border;
+}
+
+.mt-footer-inner {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 10px 24px 14px;
+}
+
+#mt-footer .mw-footer {
+	border-top: none;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	margin: 0;
+	position: relative;
+	// symmetrical padding so pills stay clear of the absolutely-positioned logo
+	padding: 0 60px;
+
+	ul {
+		display: flex;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		gap: 4px;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	li {
+		display: block;
+		padding: 0;
+	}
+}
+
+// Places footer list — pill buttons
+#footer-places li a,
+#footer-places li .cdx-button {
+	display: inline-block;
+	min-height: 0;
+	padding: 3px 10px;
+	background: linear-gradient( 180deg, @mt-btn-hi 0%, @mt-btn-lo 100% );
+	border: 1px solid @mt-border;
+	border-radius: 10px;
+	color: @mt-muted;
+	font-family: @mt-font;
+	font-size: 10px;
+	line-height: 1.4;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.1s, border-color 0.1s;
+
+	&:hover {
+		color: @mt-accent;
+		border-color: @mt-accent;
+	}
+}
+
+// Copyright text in footer
+#copyright {
+	font-family: @mt-font;
+	font-size: 10px;
+	color: fade( @mt-muted, 55% );
+	text-align: center;
+	flex-basis: 100%;
+}
+
+// Powered-by logo — anchored to the right of the footer bar
+#footer-icons {
+	float: none;
+	margin: 0;
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY( -50% );
+
+	ul {
+		align-items: center;
+	}
+
+	li a img {
+		opacity: 0.4;
+		filter: grayscale( 1 );
+		transition: opacity 0.15s;
+
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+// ============================================================
+// Image borders — asymmetric jailbar frame
+//   Rounded corners: TL and BR (solid cap over bar ends)
+//   Square corners:  TR and BL (bars flush to edge)
+//   Asymmetry axis:  diagonal TL ↔ BR
+// ============================================================
+@img-border-w:   8px;
+@img-border-r:   14px;     // outer radius — inner radius = 14-8 = 6px, creeps over jailbars
+@img-bar-dark:   #343e68;  // dark jailbar band
+@img-bar-light:  #5a68A0;  // light jailbar band
+
+.mw-body-content .thumbinner,
+.mw-body-content figure {
+	display: flex !important;
+	flex-direction: column;
+	width: fit-content !important;
+	position: relative;
+	padding: 0 !important;
+	overflow: hidden;
+
+	// Transparent border creates the frame geometry; background shows through
+	border: @img-border-w solid transparent;
+	border-radius: @img-border-r 0 @img-border-r 0;
+
+	// Three background layers — uniform chrome across all corners, no cap tint
+	background-image:
+		url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0,4 L4,0' stroke='%2388aacc' stroke-width='0.6' opacity='0.22'/%3E%3C/svg%3E" ),
+		linear-gradient( 180deg, @mt-surface-dk 0%, darken( @mt-surface-dk, 6% ) 100% ),
+		linear-gradient( transparent, transparent );
+	background-origin: border-box, border-box, padding-box;
+	background-clip:  border-box, border-box, padding-box;
+
+}
+
+@img-bar-strip: repeating-linear-gradient(
+	90deg,
+	@img-bar-dark  0,
+	@img-bar-dark  2px,
+	@img-bar-light 2px,
+	@img-bar-light 6px
+);
+
+// Caption at top of frame — jailbar styled, above the image
+.mw-body-content .thumbcaption,
+.mw-body-content figcaption {
+	order: -1;
+	background-image: @img-bar-strip;
+	border-bottom: 0px solid fade( @mt-border, 50% );
+	padding: 4px 2px 3px 13px;
+	line-height: 1;
+	font-family: @mt-font;
+	font-size: 10px;
+	color: #ffffff;
+	font-weight: bold;
+	letter-spacing: 0.04em;
+}
+
+// Bottom jailbar strip — mirrors the caption bar at the foot of the frame
+.mw-body-content .thumbinner::after,
+.mw-body-content figure::after {
+	content: '';
+	display: block;
+	height: 10px;
+	background-image: @img-bar-strip;
+	border-top: 0px solid fade( @mt-border, 50% );
+}
+
+// ============================================================
+// Categories
+// ============================================================
+#catlinks:not( :has( > div ) ) {
+	display: none;
+}
+
+#catlinks {
+	margin-top: 8px;
+	padding: 6px 10px;
+	background: @mt-bg;
+	border: 1px solid @mt-border;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.mw-normal-catlinks,
+.mw-hidden-catlinks {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.mt-cat-label {
+	font-family: @mt-font;
+	font-size: 10px;
+	color: @mt-muted;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	white-space: nowrap;
+}
+
+#catlinks ul {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 4px;
+	flex-wrap: wrap;
+}
+
+#catlinks li {
+	margin: 0;
+	padding: 0;
+	border-left: 0px;
+}
+
+#catlinks li a {
+	display: inline-block;
+	padding: 2px 8px;
+	background: linear-gradient( 180deg, @mt-btn-hi 0%, @mt-btn-lo 100% );
+	border: 1px solid @mt-border;
+	border-radius: 8px;
+	color: @mt-muted;
+	font-family: @mt-font;
+	font-size: 10px;
+	text-decoration: none;
+	transition: color 0.1s, border-color 0.1s;
+
+	&:hover {
+		color: @mt-accent;
+		border-color: @mt-accent;
+	}
+}
+
+// ============================================================
+// Generic buttons (.button, button, input[type="submit"])
+// ============================================================
+.button,
+button,
+input[ type='submit' ],
+input[ type='button' ] {
+	display: inline-block;
+	min-height: 0;
+	padding: 3px 10px;
+	background: linear-gradient( 180deg, @mt-btn-hi 0%, @mt-btn-lo 100% );
+	border: 1px solid @mt-border;
+	border-radius: 10px;
+	color: @mt-muted;
+	font-family: @mt-font;
+	font-size: 10px;
+	line-height: 1.4;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.1s, border-color 0.1s;
+
+	&:hover,
+	&:focus {
+		color: @mt-accent;
+		border-color: @mt-accent;
+		outline: none;
+	}
+}
+
+// ============================================================
+// Misc MW elements
+// ============================================================
+// New MW (1.40+): h2 and .mw-editsection are siblings inside div.mw-heading
+.mw-heading {
+	display: flex;
+	align-items: baseline;
+}
+
+.mw-editsection {
+	margin-left: auto;
+	flex-shrink: 0;
+	font-size: 15px;
+}
+
+.mw-editsection-bracket {
+	display: none;
+}
+
+.mw-editsection a {
+	color: @mt-border !important;
+	font-size: 0;
+	text-decoration: none;
+	//position: relative; top: 4px;
+
+	&::before {
+		content: '[✎]';
+		font-size: 18px;
+		font-style: normal;
+		display: inline-block;
+	}
+
+	&:hover {
+		color: @mt-accent !important;
+	}
+}
+
+#siteNotice {
+	margin-bottom: 10px;
+	padding: 7px 12px;
+	background: fade( @mt-accent, 7% );
+	border: 1px solid fade( @mt-border, 45% );
+	border-radius: 3px;
+	font-family: @mt-font;
+	font-size: 11px;
+	color: @mt-muted;
+
+	&:empty {
+		display: none;
+	}
+}
+
+// ============================================================
+// External link indicator
+// ============================================================
+.mw-body-content a.external::after {
+	content: ' ↗';
+	font-size: 0.75em;
+	vertical-align: super;
+	line-height: 1;
+	opacity: 0.7;
+}
+
+// ============================================================
+// abbr tooltip
+// ============================================================
+abbr[ data-title ] {
+	position: relative;
+	cursor: default;
+	text-decoration: none;
+	border-bottom: 1px solid fade( @mt-border, 55% );
+
+	&:hover {
+		z-index: 1;
+	}
+
+	&:hover::after {
+		content: attr( data-title );
+		position: absolute;
+		bottom: calc( 100% + 7px );
+		left: 50%;
+		transform: translateX( -50% );
+		background: @mt-btn-hi;
+		border: 1px solid @mt-border;
+		border-radius: 4px;
+		color: #000;
+		padding: 4px 9px;
+		font-family: @mt-font;
+		font-size: 11px;
+		white-space: normal;
+		width: max-content;
+		max-width: ~"min( 100ch, 90vw )";
+		z-index: 1000;
+		pointer-events: none;
+		box-shadow: 0 2px 6px fade( #000, 15% );
+	}
+
+	&:hover::before {
+		content: '';
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		transform: translateX( -50% );
+		border: 5px solid transparent;
+		border-top-color: @mt-border;
+		z-index: 1000;
+		pointer-events: none;
+	}
+}
+
+// ============================================================
+// Responsive
+// ============================================================
+@media ( max-width: 900px ) {
+	// background-attachment: fixed is ignored by most mobile browsers; re-apply the same gradient as scroll
+	html,
+	body {
+		background: linear-gradient( 160deg, #e8f0fa 0%, #d0e0f0 100% );
+		background-attachment: scroll;
+	}
+
+	.mt-header-inner {
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 8px 14px;
+	}
+
+	.mt-nav-primary {
+		order: 3;
+		width: 100%;
+	}
+
+	.mt-search-wrap {
+		margin-left: 0;
+		order: 2;
+		flex-basis: 100%;
+	}
+
+	.mt-user-nav {
+		order: 1;
+		margin-left: auto;
+	}
+
+	#mt-layout {
+		flex-direction: column;
+		padding: 14px;
+		gap: 14px;
+	}
+
+	// User nav: allow links to wrap on narrow headers instead of overflowing
+	.mt-user-nav {
+		.mw-portlet-body ul {
+			flex-wrap: wrap;
+			justify-content: flex-end;
+		}
+	}
+
+	// Tabs bar: let each portlet's tab list wrap instead of blowing out the content panel
+	.mt-tabs-bar {
+		.mw-portlet-body ul {
+			flex-wrap: wrap;
+		}
+	}
+
+	#mt-sidebar {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 15px;
+
+		.mt-sidebar-label {
+			width: 100%;
+		}
+
+		.mw-portlet {
+			min-width: 130px;
+			flex: 1;
+			overflow: hidden;
+		}
+
+		// Explicit width so block children have a definite containing-block width to wrap against
+		.mw-portlet-body {
+			width: 100%;
+			box-sizing: border-box;
+			overflow: hidden;
+		}
+
+		.mw-portlet-body ul {
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.mw-portlet-body li a {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: break-word;
+		}
+	}
+}
+
+@media ( max-width: 900px ) {
+	// On narrow viewports, center the tooltip on the abbr and cap at 90vw to avoid overflow
+	abbr[ data-title ]:hover::after {
+		left: 50%;
+		transform: translateX( -50% );
+	}
+
+	abbr[ data-title ]:hover::before {
+		left: 50%;
+		transform: translateX( -50% );
+	}
+}
+
+@media ( max-width: 480px ) {
+	.mt-search-wrap input[ type='search' ] {
+		width: 120px !important;
+	}
+
+	.mt-footer-inner .mw-footer {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	#footer-icons {
+		margin-left: 0;
+	}
+}

@@ -1,0 +1,111 @@
+<div id="mt-wrapper">
+
+	{{! ============================================================ }}
+	{{! HEADER                                                       }}
+	{{! ============================================================ }}
+	<header id="mt-header">
+		<div class="mt-header-inner">
+
+			<div id="p-logo" class="mw-portlet" role="banner">
+				<a href="{{link-mainpage}}" aria-label="{{msg-sitetitle}}"></a>
+			</div>
+
+{{#data-search-box}}
+			<div class="mt-search-wrap">
+				<form action="{{form-action}}" role="search" id="p-search">
+					<input type="hidden" name="title" value="{{page-title}}">
+					{{{html-input}}}
+					{{{html-button-search}}}
+				</form>
+			</div>
+			{{/data-search-box}}
+
+			{{#data-portlets}}
+			<div class="mt-user-nav">
+				{{#data-user-menu}}{{>Portlet}}{{/data-user-menu}}
+			</div>
+			{{/data-portlets}}
+
+		</div>
+
+		<div class="mt-wave" aria-hidden="true">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 30" preserveAspectRatio="none">
+				<path d="M0,15 C240,2 480,28 720,15 C960,2 1200,28 1440,15 C1680,2 1920,28 2160,15 C2400,2 2640,28 2880,15 L2880,30 L0,30 Z" fill="#f0f4fb"/>
+				<path d="M0,15 C240,2 480,28 720,15 C960,2 1200,28 1440,15 C1680,2 1920,28 2160,15 C2400,2 2640,28 2880,15" fill="none" stroke="#8aadd8" stroke-width="1.5" opacity="0.7"/>
+			</svg>
+		</div>
+	</header>
+
+	{{! ============================================================ }}
+	{{! MAIN LAYOUT                                                  }}
+	{{! ============================================================ }}
+	<div id="mt-layout">
+
+		<aside id="mt-sidebar" role="navigation" aria-label="Site navigation">
+			{{#data-portlets-sidebar.data-portlets-first}}{{>Portlet}}{{/data-portlets-sidebar.data-portlets-first}}
+			{{#data-portlets-sidebar.array-portlets-rest}}{{>Portlet}}{{/data-portlets-sidebar.array-portlets-rest}}
+			{{#data-portlets}}
+			{{#data-languages}}{{>Portlet}}{{/data-languages}}
+			{{/data-portlets}}
+		</aside>
+
+		<main id="content" class="mw-body mt-content" role="main">
+
+			<div class="mt-tabs-bar">
+				{{#data-portlets}}
+				{{#data-namespaces}}{{>Portlet}}{{/data-namespaces}}
+				{{#data-views}}{{>Portlet}}{{/data-views}}
+				{{#data-actions}}{{>Portlet}}{{/data-actions}}
+				{{#data-variants}}{{>Portlet}}{{/data-variants}}
+				{{/data-portlets}}
+			</div>
+
+			<div id="siteNotice">{{{html-site-notice}}}</div>
+			{{{html-user-message}}}
+
+			<div class="mw-indicators mw-body-content">
+				{{#array-indicators}}
+				<div id="{{id}}" class="{{class}}">{{{html}}}</div>
+				{{/array-indicators}}
+			</div>
+
+			{{{html-title-heading}}}
+
+			<div class="mw-body-content">
+				<div id="contentSub">
+					{{{html-subtitle}}}
+					{{{html-undelete-link}}}
+				</div>
+				<div id="bodyContent">
+					{{{html-body-content}}}
+				</div>
+				<div class="visualClear"></div>
+				{{#data-portlets}}
+				{{>CategoryPortlet}}
+				{{/data-portlets}}
+			</div>
+
+			{{{html-after-content}}}
+
+		</main>
+
+	</div>
+
+	{{#data-footer}}{{#data-last-modified}}<div id="mt-lastmod">{{>LastModifiedLine}}</div>{{/data-last-modified}}{{/data-footer}}
+
+	{{! ============================================================ }}
+	{{! FOOTER                                                       }}
+	{{! ============================================================ }}
+	<footer id="mt-footer">
+		<div class="mt-wave mt-wave-footer" aria-hidden="true">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 30" preserveAspectRatio="none">
+				<path d="M0,15 C240,28 480,2 720,15 C960,28 1200,2 1440,15 C1680,28 1920,2 2160,15 C2400,28 2640,2 2880,15 L2880,0 L0,0 Z" fill="#e8f0fa"/>
+				<path d="M0,15 C240,28 480,2 720,15 C960,28 1200,2 1440,15 C1680,28 1920,2 2160,15 C2400,28 2640,2 2880,15" fill="none" stroke="#8aadd8" stroke-width="1.5" opacity="0.7"/>
+			</svg>
+		</div>
+		<div class="mt-footer-inner">
+			{{#data-footer}}{{>Footer}}{{/data-footer}}
+		</div>
+	</footer>
+
+</div>

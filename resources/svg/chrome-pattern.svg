@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4">
+  <!-- Diagonal hatch tile for brushed-chrome texture overlay -->
+  <!-- Layer as background-image at ~0.12 opacity over gradient surfaces -->
+  <path d="M0,4 L4,0" stroke="#aabbcc" stroke-width="0.5" opacity="0.15"/>
+</svg>

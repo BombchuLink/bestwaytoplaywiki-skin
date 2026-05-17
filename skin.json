@@ -1,0 +1,87 @@
+{
+	"name": "MediaTemple",
+	"version": "1.0.0",
+	"author": [],
+	"url": "",
+	"descriptionmsg": "mediatemple-skin-desc",
+	"namemsg": "skinname-mediatemple",
+	"license-name": "GPL-2.0-or-later",
+	"type": "skin",
+	"requires": {
+		"MediaWiki": ">= 1.45"
+	},
+	"ValidSkinNames": {
+		"mediatemple": {
+			"class": "SkinMustache",
+			"args": [
+				{
+					"name": "mediatemple",
+					"responsive": true,
+					"messages": [
+						"example-no-categories",
+						"sitetitle",
+						"search",
+						"otherlanguages",
+						"tagline",
+						"navigation-heading"
+					],
+					"styles": [
+						"mediawiki.ui.icon",
+						"mediawiki.ui.button",
+						"skins.mediatemple.styles"
+					],
+					"scripts": [
+						"skins.mediatemple"
+					]
+				}
+			]
+		}
+	},
+	"MessagesDirs": {
+		"MediaTemple": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"skins.mediatemple.styles": {
+			"class": "MediaWiki\\ResourceLoader\\SkinModule",
+			"features": {
+				"normalize": true,
+				"elements": true,
+				"content-tables": true,
+				"content-links": false,
+				"content-media": false,
+				"content-links-external": false,
+				"interface-message-box": true,
+				"interface-category": true,
+				"toc": true
+			},
+			"targets": [
+				"desktop",
+				"mobile"
+			],
+			"styles": [
+				"resources/skin.less"
+			]
+		},
+		"skins.mediatemple": {
+			"targets": [
+				"desktop",
+				"mobile"
+			],
+			"packageFiles": [
+				"resources/skin.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteSkinPath": "MediaTemple"
+	},
+	"ResourceModuleSkinStyles": {
+		"mediatemple": {
+			"+ext.echo.styles.badge": "resources/extensions/echo.styles.badge.less"
+		}
+	},
+	"manifest_version": 2
+}
